@@ -250,18 +250,21 @@ function esc(s){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;',
 function chooseModel(index){const m=PRICE_DATA[index];if(!m)return;showPage('simulasi');const sel=document.getElementById('priceModel');if(!sel)return;sel.value=m.sheet;updatePriceOptions()}
 function initPriceTool(){
  const sel=document.getElementById('priceModel');if(!sel)return;
- sel.innerHTML=PRICE_DATA.map(m=>`<option value="${esc(m.sheet)}">${esc(m.name)}${m.price?' — '+fmtRp(m.price):''}</option>`).join('');
+ sel.innerHTML='<option value="" selected>Default -- KLIK DISINI PILIH TYPE MOTOR --</option>'+PRICE_DATA.map(m=>`<option value="${esc(m.sheet)}">${esc(m.name)}${m.price?' — '+fmtRp(m.price):''}</option>`).join('');
  updatePriceOptions();
 }
 function updatePriceOptions(){
- const m=PRICE_DATA.find(x=>x.sheet===document.getElementById('priceModel').value)||PRICE_DATA[0];
+ const selected=document.getElementById('priceModel').value;
  const dp=document.getElementById('priceDp'),ten=document.getElementById('priceTenor');
+ if(!selected){dp.innerHTML='<option value="">Pilih tipe motor terlebih dahulu</option>';ten.innerHTML='<option value="47" selected>47 Bulan</option>';document.getElementById('hasil').textContent='Silakan klik dan pilih tipe motor untuk melihat simulasi angsuran.';document.getElementById('waSimulasi').href='https://wa.me/6285119477941';return;}
+ const m=PRICE_DATA.find(x=>x.sheet===selected)||PRICE_DATA[0];
  dp.innerHTML=m.rows.map(r=>`<option value="${r.dp}">${fmtRp(r.paid)}</option>`).join('');
- ten.innerHTML=m.tenors.map(t=>`<option value="${t}" ${t===23?'selected':''}>${t} bulan</option>`).join('');
+ ten.innerHTML=m.tenors.map(t=>`<option value="${t}" ${t===47?'selected':''}>${t} Bulan</option>`).join('');
  updatePriceResult();
 }
 function updatePriceResult(){
  const modelEl=document.getElementById('priceModel');if(!modelEl)return;
+ if(!modelEl.value){document.getElementById('hasil').textContent='Silakan klik dan pilih tipe motor untuk melihat simulasi angsuran.';return;}
  const m=PRICE_DATA.find(x=>x.sheet===modelEl.value)||PRICE_DATA[0];
  const row=m.rows.find(r=>r.dp===Number(document.getElementById('priceDp').value))||m.rows[0];
  const tenor=document.getElementById('priceTenor').value;
